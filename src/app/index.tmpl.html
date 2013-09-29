@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html ng-app="ngBattleTracker" ng-controller="AppCtrl">
+  <head>
+    <title ng-bind="pageTitle"></title>
+
+    <!-- compiled CSS --><% styles.forEach( function ( file ) { %>
+    <link rel="stylesheet" type="text/css" href="<%= file %>" /><% }); %>
+
+    <!-- compiled JavaScript --><% scripts.forEach( function ( file ) { %>
+    <script type="text/javascript" src="<%= file %>"></script><% }); %>
+
+    <!-- it's stupid to have to load it here, but this is for the +1 button -->
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      { "parsetags": "explicit" }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <h3 class="muted">Battle Tracker <small>v<%= version %></small></h3>
+      </div>
+    </div>
+
+    <div class="container" ui-view="main"></div>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-inner">
+          <p>
+            <%= copyright %>
+            <br>
+            <a href="<%= bugTrackerUrl %>">Report Bugs</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
