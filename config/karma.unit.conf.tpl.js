@@ -12,11 +12,16 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
 
 
+    plugins : [
+            'karma-chrome-launcher',
+            'karma-jasmine'
+            ],
+
     // list of files / patterns to load in the browser
     files: [
       <% scripts.forEach( function ( file ) { %>'<%= file %>',
       <% }); %>
-      '../src/app/**/*.js',
+      'src/app/**/*.js',
       '../src/test/unit/**/*.spec.js'
     ],
 

@@ -5,7 +5,8 @@
     'templates-common',
     'ui.router',
     'ui.route',
-    'ngBattleTracker.home'
+    'ngBattleTracker.home',
+    'ngBattleTracker.battleView'
   ])
 
   .config(function myAppConfig($stateProvider, $urlRouterProvider) {

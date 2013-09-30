@@ -20,7 +20,7 @@
     });
   })
 
-  .controller('HomeCtrl', function AppCtrl($scope) {
+  .controller('HomeCtrl', function HomeCtrl($scope) {
 
   });
 

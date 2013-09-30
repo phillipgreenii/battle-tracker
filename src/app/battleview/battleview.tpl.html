@@ -1,0 +1,32 @@
+<section>
+  <header>
+    <h1 class="muted">Battle</h1>
+  </header>
+
+  <section ng-show="combatants.length" ng-cloak>
+  <ul>
+  <li ng-repeat="combatant in combatants">
+  <div class="combatant">
+    <span class="name" ng-bind="combatant.name"></span>
+    <span class="initiative" ng-bind="combatant.initiative"></span>
+  </div>
+  </li>
+  </ul>
+  </section>
+
+  <footer>
+    <form id="new-combatant-form" ng-submit="addCombatant()">
+      <label for="new-combatant-name">Name</label>
+      <input id="new-combatant-name" ng-model="newCombatant.name" autofocus required>
+
+      <label for="new-combatant-initiative">Initiative</label>
+      <input id="new-combatant-initiative" type="number" ng-model="newCombatant.initiative" required>
+
+      <input type="submit" value="Add Combatant">
+    </form>
+  </footer>
+
+
+
+</section>
+
