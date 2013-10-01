@@ -9,6 +9,14 @@
   <div class="combatant">
     <span class="name" ng-bind="combatant.name"></span>
     <span class="initiative" ng-bind="combatant.initiative"></span>
+    <div class="btn-group" ng-show="combatant.actions">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        Actions <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li ng-repeat="action in combatant.actions"><a href="" ng-click="action.apply()" ng-bind="action.label"></a></li>
+      </ul>
+    </div>
   </div>
   </li>
   </ul>

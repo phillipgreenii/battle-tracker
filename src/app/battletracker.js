@@ -5,6 +5,7 @@
     'templates-common',
     'ui.router',
     'ui.route',
+    'ui.bootstrap',
     'ngBattleTracker.home',
     'ngBattleTracker.battleView'
   ])
