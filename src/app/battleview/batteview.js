@@ -1,5 +1,27 @@
 (function(angular, undefined) {
 
+  var actionDescriptors = [{
+    label: 'Finish Turn',
+    isApplicable: function(combatant, position) {
+      return position === 0 && !combatant.takenTurn;
+    },
+    generateActionFor: function(combatant) {
+      return function() {
+        combatant.takenTurn = true;
+      };
+    }
+  }, {
+    label: 'Remove Combatant',
+    isApplicable: function() {
+      return true;
+    },
+    generateActionFor: function(combatant, position, combatants) {
+      return function() {
+        combatants.splice(position, 1);
+      };
+    }
+  }];
+
   angular.module('ngBattleTracker.battleView', [
     'ui.router',
     'ui.route'
@@ -29,6 +51,10 @@
       self.takenTurn = false;
     };
 
+    this.Combatant.prototype.toString = function() {
+      return "[Combatant " + this.name + "]";
+    };
+
     function refreshCombatantList() {
       $scope.combatants.sort(function(a, b) {
         if (!a.takenTurn && b.takenTurn) {
@@ -47,15 +73,23 @@
     function calculateActions() {
       $scope.combatants.forEach(function(combatant, index) {
         var actions = [];
-        if (index === 0 && !combatant.takenTurn) {
-          actions.push({
-            label: 'Finish Turn',
+
+        function buildAction(actionDescriptor, combatant) {
+          var actionFn = actionDescriptor.generateActionFor(combatant, index, $scope.combatants);
+          return {
+            label: actionDescriptor.label,
             apply: function() {
-              combatant.takenTurn = true;
+              actionFn();
               refreshCombatantList();
             }
-          });
+          };
         }
+
+        actionDescriptors.forEach(function(actionDescriptor) {
+          if (actionDescriptor.isApplicable(combatant, index, $scope.combatants)) {
+            actions.push(buildAction(actionDescriptor, combatant));
+          }
+        });
         combatant.actions = actions;
       });
     }

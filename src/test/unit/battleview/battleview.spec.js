@@ -94,7 +94,43 @@
 
       describe('Combatant Actions', function() {
 
+        function lookupAction(actions, label) {
+          var i, len = actions.length;
+          for (i = 0; i < len; i++) {
+            if (actions[i].label === label) {
+              return i;
+            }
+
+          }
+          return -1;
+        }
+
+        function applyAction(combatant, label) {
+          var position = lookupAction(combatant.actions, label),
+            action = combatant.actions[position];
+
+          action.apply();
+        }
+
+        beforeEach(function() {
+          this.addMatchers({
+            toHaveAction: function(label) {
+              var combatant = this.actual,
+                position = lookupAction(combatant.actions, label),
+                actionFound = position >= 0,
+                notText = this.isNot ? " not" : "";
+
+              this.message = function() {
+                return "Expected " + combatant + notText + " to have action '" + label + "'";
+              };
+
+              return actionFound;
+            }
+          });
+        });
+
         describe('Finish Turn', function() {
+          var finishTurnLabel = 'Finish Turn';
 
           beforeEach(function($controller, $rootScope) {
             scope.combatants.push(new ctrl.Combatant('Ed', 10));
@@ -104,16 +140,19 @@
             scope.$digest();
           });
 
-          it('should be available to new combatants', function() {
-            expect(scope.combatants[0].actions).toBeDefined();
-            expect(scope.combatants[0].actions.length).toBe(1);
-            expect(scope.combatants[0].actions[0].label).toEqual('Finish Turn');
+          it('should be available to first combatant', function() {
+            expect(scope.combatants[0]).toHaveAction(finishTurnLabel);
+          });
+
+          it('should not be available to non-first combatants', function() {
+            expect(scope.combatants[1]).not.toHaveAction(finishTurnLabel);
+            expect(scope.combatants[2]).not.toHaveAction(finishTurnLabel);
           });
 
           it('should mark combatant as their turn being taken', function() {
             var combatant = scope.combatants[0];
             expect(combatant.takenTurn).toEqual(false);
-            combatant.actions[0].apply();
+            applyAction(combatant, finishTurnLabel);
             scope.$digest();
             expect(combatant.takenTurn).toEqual(true);
           });
@@ -121,12 +160,38 @@
           it('should move them to the end of the list', function() {
             var combatant = scope.combatants[0],
               lastCombatant;
-            combatant.actions[0].apply();
+            applyAction(combatant, finishTurnLabel);
             scope.$digest();
             lastCombatant = scope.combatants[scope.combatants.length - 1];
             expect(combatant).toBe(lastCombatant);
           });
         });
+
+        describe('Remove Combatant', function() {
+          var removeCombatantLabel = 'Remove Combatant';
+
+          beforeEach(function($controller, $rootScope) {
+            scope.combatants.push(new ctrl.Combatant('Ed', 10));
+            scope.combatants.push(new ctrl.Combatant('Jim', 5));
+            scope.combatants.push(new ctrl.Combatant('Kal', 1));
+            ctrl.refreshCombatantList();
+            scope.$digest();
+          });
+
+          it('should be available to all combatants', function() {
+            expect(scope.combatants[0]).toHaveAction(removeCombatantLabel);
+            expect(scope.combatants[1]).toHaveAction(removeCombatantLabel);
+            expect(scope.combatants[2]).toHaveAction(removeCombatantLabel);
+          });
+
+          it('should remove combatant', function() {
+            var combatant = scope.combatants[0];
+            applyAction(combatant, removeCombatantLabel);
+            scope.$digest();
+            expect(scope.combatants).not.toContain(combatant);
+          });
+        });
+
       });
     });
 
