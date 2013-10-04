@@ -19,6 +19,70 @@
         expect(scope.combatants.length).toBe(0);
       });
 
+      describe('isRoundComplete()', function() {
+
+        it("should return true when all combatants' turnStatus is complete", function() {
+          scope.combatants.push(new ctrl.Combatant('Ed', 10, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Jim', 5, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Kal', 1, ctrl.Combatant.TURN_STATUS.complete));
+          scope.$digest();
+
+          expect(scope.isRoundComplete()).toBe(true);
+        });
+
+        it("should return false when any combatant's turnStatus is not complete", function() {
+          scope.combatants.push(new ctrl.Combatant('Ed', 10, ctrl.Combatant.TURN_STATUS.active));
+          scope.combatants.push(new ctrl.Combatant('Jim', 5, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Kal', 1, ctrl.Combatant.TURN_STATUS.complete));
+          scope.$digest();
+
+          expect(scope.isRoundComplete()).toBe(false);
+        });
+
+        it("should return false when no combatants", function() {
+          expect(scope.isRoundComplete()).toBe(false);
+        });
+
+      });
+
+
+      describe('startNextRound()', function() {
+
+        it("should reset all players to waiting and start the next round when round is complete", function() {
+          scope.combatants.push(new ctrl.Combatant('Ed', 10, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Jim', 5, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Kal', 1, ctrl.Combatant.TURN_STATUS.complete));
+          scope.$digest();
+
+          scope.startNextRound();
+
+          //status are reset
+          expect(scope.combatants[0].turnStatus).toEqual(ctrl.Combatant.TURN_STATUS.active);
+          expect(scope.combatants[1].turnStatus).toEqual(ctrl.Combatant.TURN_STATUS.waiting);
+          expect(scope.combatants[2].turnStatus).toEqual(ctrl.Combatant.TURN_STATUS.waiting);
+        });
+
+        it("should do nothing if round is not complete", function() {
+          scope.combatants.push(new ctrl.Combatant('Ed', 10, ctrl.Combatant.TURN_STATUS.active));
+          scope.combatants.push(new ctrl.Combatant('Jim', 5, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Kal', 1, ctrl.Combatant.TURN_STATUS.complete));
+          scope.$digest();
+
+          scope.startNextRound();
+
+          //status are the same
+          expect(scope.combatants[0].turnStatus).toEqual(ctrl.Combatant.TURN_STATUS.active);
+          expect(scope.combatants[1].turnStatus).toEqual(ctrl.Combatant.TURN_STATUS.complete);
+          expect(scope.combatants[2].turnStatus).toEqual(ctrl.Combatant.TURN_STATUS.complete);
+        });
+
+        it("should return false when no combatants", function() {
+          expect(scope.isRoundComplete()).toBe(false);
+        });
+
+      });
+
+
       describe('orderByTurn filter', function() {
         var filter,
           activeCombatant10,

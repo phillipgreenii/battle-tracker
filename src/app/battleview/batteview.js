@@ -180,6 +180,26 @@
       $scope.newCombatant = {};
       refreshCombatantList();
     };
+
+    $scope.isRoundComplete = function() {
+      var hasCombatants = $scope.combatants.length > 0,
+        allComplete = $scope.combatants.every(function(combatant) {
+          return combatant.turnStatus === Combatant.TURN_STATUS.complete;
+        });
+      return hasCombatants && allComplete;
+    };
+
+    $scope.startNextRound = function() {
+      console.log('complete?', $scope.isRoundComplete());
+      if ($scope.isRoundComplete()) {
+        $scope.combatants.forEach(function(combatant) {
+          console.log('c:b', combatant);
+          combatant.turnStatus = Combatant.TURN_STATUS.waiting;
+          console.log('c:a', combatant);
+        });
+        refreshCombatantList();
+      }
+    };
   });
 
 }(angular));
