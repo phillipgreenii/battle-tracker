@@ -258,6 +258,10 @@ module.exports = function(grunt) {
      */
     csslint: {
       app: {
+        options: {
+          'adjoining-classes': false,
+          'box-sizing': false
+        },
         src: [
           '<%= app_files.css %>'
         ]

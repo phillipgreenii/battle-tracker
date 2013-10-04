@@ -2,12 +2,23 @@
 
   var actionDescriptors = [{
     label: 'Finish Turn',
-    isApplicable: function(combatant, position) {
-      return position === 0 && !combatant.takenTurn;
+    isApplicable: function(combatant) {
+      return combatant.turnStatus === Combatant.TURN_STATUS.active ||
+        combatant.turnStatus === Combatant.TURN_STATUS.delaying;
     },
     generateActionFor: function(combatant) {
       return function() {
-        combatant.takenTurn = true;
+        combatant.turnStatus = Combatant.TURN_STATUS.complete;
+      };
+    }
+  }, {
+    label: 'Delay Turn',
+    isApplicable: function(combatant) {
+      return combatant.turnStatus === Combatant.TURN_STATUS.active;
+    },
+    generateActionFor: function(combatant, position, combatants) {
+      return function() {
+        combatant.turnStatus = Combatant.TURN_STATUS.delaying;
       };
     }
   }, {
@@ -21,6 +32,36 @@
       };
     }
   }];
+
+  function Combatant(name, initiative, turnStatus) {
+    var self = this;
+    self.name = name;
+    self.initiative = initiative;
+    self.turnStatus = turnStatus || Combatant.TURN_STATUS.waiting;
+  }
+
+  Combatant.TURN_STATUS = {
+    active: {
+      label: 'active',
+      ordinal: 4
+    },
+    delaying: {
+      label: 'delaying',
+      ordinal: 2
+    },
+    waiting: {
+      label: 'waiting',
+      ordinal: 1
+    },
+    complete: {
+      label: 'complete',
+      ordinal: 0
+    }
+  };
+
+  Combatant.prototype.toString = function() {
+    return "[Combatant " + this.name + ':' + this.turnStatus.label + "]";
+  };
 
   angular.module('ngBattleTracker.battleView', [
     'ui.router',
@@ -42,30 +83,45 @@
     });
   })
 
-  .controller('BattleViewCtrl', function BattleViewCtrl($scope) {
-    var ctrl = this;
-    this.Combatant = function Combatant(name, initiative) {
-      var self = this;
-      self.name = name;
-      self.initiative = initiative;
-      self.takenTurn = false;
-    };
-
-    this.Combatant.prototype.toString = function() {
-      return "[Combatant " + this.name + "]";
-    };
-
-    function refreshCombatantList() {
-      $scope.combatants.sort(function(a, b) {
-        if (!a.takenTurn && b.takenTurn) {
-          return -1;
-        } else if (a.takenTurn && !b.takenTurn) {
-          return 1;
-        } else {
+  .filter('orderByTurn', function() {
+    return function(combatants) {
+      return combatants.slice().sort(function(a, b) {
+        if (a.turnStatus === b.turnStatus) {
           return b.initiative - a.initiative;
+        } else {
+          return b.turnStatus.ordinal - a.turnStatus.ordinal;
         }
       });
+    };
+  })
 
+  .controller('BattleViewCtrl', function BattleViewCtrl($scope) {
+    var ctrl = this;
+    this.Combatant = Combatant;
+
+    function filterCombatantsOfTurnStatus(turnStatus) {
+      return $scope.combatants.filter(function(combatant) {
+        return combatant.turnStatus === turnStatus;
+      });
+    }
+
+    function sortCombatantList() {
+      $scope.combatants.sort(function(a, b) {
+        if (a.turnStatus === b.turnStatus) {
+          return b.initiative - a.initiative;
+        } else {
+          return b.turnStatus.ordinal - a.turnStatus.ordinal;
+        }
+      });
+    }
+
+    function refreshCombatantList() {
+      //clear active status
+      filterCombatantsOfTurnStatus(Combatant.TURN_STATUS.active).forEach(function(combatant) {
+        combatant.turnStatus = Combatant.TURN_STATUS.waiting;
+      });
+      //set active status
+      (filterCombatantsOfTurnStatus(Combatant.TURN_STATUS.waiting)[0] || {}).turnStatus = Combatant.TURN_STATUS.active;
       calculateActions();
     }
     ctrl.refreshCombatantList = refreshCombatantList;
@@ -102,7 +158,7 @@
       return combatant && combatant.name && combatant.initiative !== undefined;
     }
 
-    function determineInsertLocation(combatants, combatant) {
+    function determineInsertPosition(combatants, combatant) {
       var len = combatants.length,
         i;
 
@@ -118,7 +174,9 @@
       if (!isValidCombatant($scope.newCombatant)) {
         return;
       }
-      $scope.combatants.push(new ctrl.Combatant($scope.newCombatant.name, $scope.newCombatant.initiative));
+      var combatant = new ctrl.Combatant($scope.newCombatant.name, $scope.newCombatant.initiative),
+        insertPosition = determineInsertPosition($scope.combatants, combatant);
+      $scope.combatants.splice(insertPosition, 0, combatant);
       $scope.newCombatant = {};
       refreshCombatantList();
     };

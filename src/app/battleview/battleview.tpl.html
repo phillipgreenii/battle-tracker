@@ -4,9 +4,11 @@
   </header>
 
   <section ng-show="combatants.length" ng-cloak>
-  <ul>
-  <li ng-repeat="combatant in combatants">
-  <div class="combatant">
+  <ul class="unstyled">
+  <li ng-repeat="combatant in combatants | orderByTurn">
+  <div class="combatant" ng-class="combatant.turnStatus.label + 'Turn'">
+    <span class="label label-warning" ng-show="combatant.turnStatus.label == 'delaying'">Delaying</span>
+    <span class="label label-inverse" ng-show="combatant.turnStatus.label == 'waiting'">Waiting</span>
     <span class="name" ng-bind="combatant.name"></span>
     <span class="initiative" ng-bind="combatant.initiative"></span>
     <div class="btn-group" ng-show="combatant.actions">
