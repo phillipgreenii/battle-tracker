@@ -1,4 +1,4 @@
-battle-tracker
+battle-tracker [![Build Status](https://travis-ci.org/phillipgreenii/battle-tracker.png?branch=master)](https://travis-ci.org/phillipgreenii/battle-tracker)
 ==============
 
 Tabletop battle tracker
