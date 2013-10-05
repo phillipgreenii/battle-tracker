@@ -190,12 +190,9 @@
     };
 
     $scope.startNextRound = function() {
-      console.log('complete?', $scope.isRoundComplete());
       if ($scope.isRoundComplete()) {
         $scope.combatants.forEach(function(combatant) {
-          console.log('c:b', combatant);
           combatant.turnStatus = Combatant.TURN_STATUS.waiting;
-          console.log('c:a', combatant);
         });
         refreshCombatantList();
       }
