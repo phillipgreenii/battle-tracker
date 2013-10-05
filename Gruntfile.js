@@ -68,11 +68,13 @@ module.exports = function(grunt) {
           "package.json",
           "bower.json"
         ],
-        commit: false,
+        updateConfigs: ['pkg'],
+        commit: true,
         commitMessage: 'chore(release): v%VERSION%',
         commitFiles: [
           "package.json",
-          "bower.json"
+          "bower.json",
+          "CHANGELOG.md"
         ],
         createTag: true,
         tagName: 'v%VERSION%',
@@ -592,6 +594,11 @@ module.exports = function(grunt) {
     'cssmin', 'uglify',
     'index:compile'
   ]);
+
+  /**
+   * The release task is to update versions, 
+   */
+  grunt.registerTask('release', ['bump-only:minor', 'changelog', 'bump-commit']);
 
   /**
    * A utility function to get all app JavaScript sources.
