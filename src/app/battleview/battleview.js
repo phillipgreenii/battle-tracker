@@ -33,10 +33,11 @@
     }
   }];
 
-  function Combatant(name, initiative, turnStatus) {
+  function Combatant(name, initiative, partyMember, turnStatus) {
     var self = this;
     self.name = name;
     self.initiative = initiative;
+    self.partyMember = partyMember || false;
     self.turnStatus = turnStatus || Combatant.TURN_STATUS.waiting;
   }
 
@@ -151,7 +152,7 @@
     }
 
     $scope.combatants = [];
-    $scope.newCombatant = {};
+    $scope.newCombatant = generateNewCombatant();
     refreshCombatantList();
 
     function isValidCombatant(combatant) {
@@ -174,12 +175,20 @@
       if (!isValidCombatant($scope.newCombatant)) {
         return;
       }
-      var combatant = new ctrl.Combatant($scope.newCombatant.name, $scope.newCombatant.initiative),
+      var combatant = new ctrl.Combatant($scope.newCombatant.name, $scope.newCombatant.initiative, $scope.newCombatant.partyMember),
         insertPosition = determineInsertPosition($scope.combatants, combatant);
       $scope.combatants.splice(insertPosition, 0, combatant);
-      $scope.newCombatant = {};
+      $scope.newCombatant = generateNewCombatant();
       refreshCombatantList();
     };
+
+    function generateNewCombatant() {
+      return {
+        name: undefined,
+        initiative: undefined,
+        partyMember: false
+      };
+    }
 
     $scope.isRoundComplete = function() {
       var hasCombatants = $scope.combatants.length > 0,

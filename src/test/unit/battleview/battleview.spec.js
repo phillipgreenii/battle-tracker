@@ -22,18 +22,18 @@
       describe('isRoundComplete()', function() {
 
         it("should return true when all combatants' turnStatus is complete", function() {
-          scope.combatants.push(new ctrl.Combatant('Ed', 10, ctrl.Combatant.TURN_STATUS.complete));
-          scope.combatants.push(new ctrl.Combatant('Jim', 5, ctrl.Combatant.TURN_STATUS.complete));
-          scope.combatants.push(new ctrl.Combatant('Kal', 1, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Ed', 10, false, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Jim', 5, false, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Kal', 1, false, ctrl.Combatant.TURN_STATUS.complete));
           scope.$digest();
 
           expect(scope.isRoundComplete()).toBe(true);
         });
 
         it("should return false when any combatant's turnStatus is not complete", function() {
-          scope.combatants.push(new ctrl.Combatant('Ed', 10, ctrl.Combatant.TURN_STATUS.active));
-          scope.combatants.push(new ctrl.Combatant('Jim', 5, ctrl.Combatant.TURN_STATUS.complete));
-          scope.combatants.push(new ctrl.Combatant('Kal', 1, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Ed', 10, false, ctrl.Combatant.TURN_STATUS.active));
+          scope.combatants.push(new ctrl.Combatant('Jim', 5, false, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Kal', 1, false, ctrl.Combatant.TURN_STATUS.complete));
           scope.$digest();
 
           expect(scope.isRoundComplete()).toBe(false);
@@ -49,13 +49,12 @@
       describe('startNextRound()', function() {
 
         it("should reset all players to waiting and start the next round when round is complete", function() {
-          scope.combatants.push(new ctrl.Combatant('Ed', 10, ctrl.Combatant.TURN_STATUS.complete));
-          scope.combatants.push(new ctrl.Combatant('Jim', 5, ctrl.Combatant.TURN_STATUS.complete));
-          scope.combatants.push(new ctrl.Combatant('Kal', 1, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Ed', 10, false, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Jim', 5, false, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Kal', 1, false, ctrl.Combatant.TURN_STATUS.complete));
           scope.$digest();
 
           scope.startNextRound();
-
           //status are reset
           expect(scope.combatants[0].turnStatus).toEqual(ctrl.Combatant.TURN_STATUS.active);
           expect(scope.combatants[1].turnStatus).toEqual(ctrl.Combatant.TURN_STATUS.waiting);
@@ -63,9 +62,9 @@
         });
 
         it("should do nothing if round is not complete", function() {
-          scope.combatants.push(new ctrl.Combatant('Ed', 10, ctrl.Combatant.TURN_STATUS.active));
-          scope.combatants.push(new ctrl.Combatant('Jim', 5, ctrl.Combatant.TURN_STATUS.complete));
-          scope.combatants.push(new ctrl.Combatant('Kal', 1, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Ed', 10, false, ctrl.Combatant.TURN_STATUS.active));
+          scope.combatants.push(new ctrl.Combatant('Jim', 5, false, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Kal', 1, false, ctrl.Combatant.TURN_STATUS.complete));
           scope.$digest();
 
           scope.startNextRound();
@@ -98,13 +97,13 @@
         }));
 
         beforeEach(function(orderByTurnFilter) {
-          activeCombatant10 = new ctrl.Combatant('activeCombatant10', 10, ctrl.Combatant.TURN_STATUS.active);
-          delayingCombatant20 = new ctrl.Combatant('delayingCombatant20', 20, ctrl.Combatant.TURN_STATUS.delaying);
-          delayingCombatant15 = new ctrl.Combatant('delayingCombatant15', 15, ctrl.Combatant.TURN_STATUS.delaying);
-          waitingCombatant20 = new ctrl.Combatant('waitingCombatant20', 5, ctrl.Combatant.TURN_STATUS.waiting);
-          waitingCombatant15 = new ctrl.Combatant('waitingCombatant15', 3, ctrl.Combatant.TURN_STATUS.waiting);
-          completeCombatant20 = new ctrl.Combatant('completeCombatant20', 25, ctrl.Combatant.TURN_STATUS.complete);
-          completeCombatant15 = new ctrl.Combatant('completeCombatant15', 23, ctrl.Combatant.TURN_STATUS.complete);
+          activeCombatant10 = new ctrl.Combatant('activeCombatant10', 10, false, ctrl.Combatant.TURN_STATUS.active);
+          delayingCombatant20 = new ctrl.Combatant('delayingCombatant20', 20, false, ctrl.Combatant.TURN_STATUS.delaying);
+          delayingCombatant15 = new ctrl.Combatant('delayingCombatant15', 15, false, ctrl.Combatant.TURN_STATUS.delaying);
+          waitingCombatant20 = new ctrl.Combatant('waitingCombatant20', 5, false, ctrl.Combatant.TURN_STATUS.waiting);
+          waitingCombatant15 = new ctrl.Combatant('waitingCombatant15', 3, false, ctrl.Combatant.TURN_STATUS.waiting);
+          completeCombatant20 = new ctrl.Combatant('completeCombatant20', 25, false, ctrl.Combatant.TURN_STATUS.complete);
+          completeCombatant15 = new ctrl.Combatant('completeCombatant15', 23, false, ctrl.Combatant.TURN_STATUS.complete);
         });
 
         it('should sort active combatants to top', function() {
@@ -152,10 +151,11 @@
 
       describe('Combatant', function() {
         it('should have name, initative, and no actions', function() {
-          var combatant = new ctrl.Combatant('Ted', 3);
+          var combatant = new ctrl.Combatant('Ted', 3, false);
 
           expect(combatant.name).toEqual('Ted');
           expect(combatant.initiative).toEqual(3);
+          expect(combatant.partyMember).toEqual(false);
           expect(combatant.turnStatus).toEqual(ctrl.Combatant.TURN_STATUS.waiting);
         });
       });
@@ -267,10 +267,10 @@
           var finishTurnLabel = 'Finish Turn';
 
           beforeEach(function($controller, $rootScope) {
-            var ed = new ctrl.Combatant('Ed', 10, ctrl.Combatant.TURN_STATUS.active),
-              jim = new ctrl.Combatant('Jim', 5, ctrl.Combatant.TURN_STATUS.delaying),
-              kal = new ctrl.Combatant('Kal', 1, ctrl.Combatant.TURN_STATUS.waiting),
-              zack = new ctrl.Combatant('Zack', 1, ctrl.Combatant.TURN_STATUS.complete);
+            var ed = new ctrl.Combatant('Ed', 10, false, ctrl.Combatant.TURN_STATUS.active),
+              jim = new ctrl.Combatant('Jim', 5, false, ctrl.Combatant.TURN_STATUS.delaying),
+              kal = new ctrl.Combatant('Kal', 1, false, ctrl.Combatant.TURN_STATUS.waiting),
+              zack = new ctrl.Combatant('Zack', 1, false, ctrl.Combatant.TURN_STATUS.complete);
             scope.combatants = [ed, jim, kal, zack];
             ctrl.refreshCombatantList();
             scope.$digest();
@@ -305,10 +305,10 @@
           var delayTurnLabel = 'Delay Turn';
 
           beforeEach(function($controller, $rootScope) {
-            var ed = new ctrl.Combatant('Ed', 10, ctrl.Combatant.TURN_STATUS.active),
-              jim = new ctrl.Combatant('Jim', 5, ctrl.Combatant.TURN_STATUS.delaying),
-              kal = new ctrl.Combatant('Kal', 1, ctrl.Combatant.TURN_STATUS.waiting),
-              zack = new ctrl.Combatant('Zack', 1, ctrl.Combatant.TURN_STATUS.complete);
+            var ed = new ctrl.Combatant('Ed', 10, false, ctrl.Combatant.TURN_STATUS.active),
+              jim = new ctrl.Combatant('Jim', 5, false, ctrl.Combatant.TURN_STATUS.delaying),
+              kal = new ctrl.Combatant('Kal', 1, false, ctrl.Combatant.TURN_STATUS.waiting),
+              zack = new ctrl.Combatant('Zack', 1, false, ctrl.Combatant.TURN_STATUS.complete);
             scope.combatants = [ed, jim, kal, zack];
             ctrl.refreshCombatantList();
             scope.$digest();
@@ -343,10 +343,10 @@
           var removeCombatantLabel = 'Remove Combatant';
 
           beforeEach(function($controller, $rootScope) {
-            var ed = new ctrl.Combatant('Ed', 10, ctrl.Combatant.TURN_STATUS.active),
-              jim = new ctrl.Combatant('Jim', 5, ctrl.Combatant.TURN_STATUS.delaying),
-              kal = new ctrl.Combatant('Kal', 1, ctrl.Combatant.TURN_STATUS.waiting),
-              zack = new ctrl.Combatant('Zack', 1, ctrl.Combatant.TURN_STATUS.complete);
+            var ed = new ctrl.Combatant('Ed', 10, false, ctrl.Combatant.TURN_STATUS.active),
+              jim = new ctrl.Combatant('Jim', 5, false, ctrl.Combatant.TURN_STATUS.delaying),
+              kal = new ctrl.Combatant('Kal', 1, false, ctrl.Combatant.TURN_STATUS.waiting),
+              zack = new ctrl.Combatant('Zack', 1, false, ctrl.Combatant.TURN_STATUS.complete);
             scope.combatants = [ed, jim, kal, zack];
             ctrl.refreshCombatantList();
             scope.$digest();

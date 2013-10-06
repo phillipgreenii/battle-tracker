@@ -33,3 +33,10 @@
   color: gray;
 }
 
+.combatant.partyMember {
+  margin-left: 0;
+}
+
+.combatant.nonPartyMember {
+  margin-left: 10%;
+}
