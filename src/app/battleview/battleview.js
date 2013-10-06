@@ -66,7 +66,8 @@
 
   angular.module('ngBattleTracker.battleView', [
     'ui.router',
-    'ui.route'
+    'ui.route',
+    'ui.bootstrap.modal'
   ])
 
   .config(function homeConfig($stateProvider) {
@@ -96,7 +97,7 @@
     };
   })
 
-  .controller('BattleViewCtrl', function BattleViewCtrl($scope) {
+  .controller('BattleViewCtrl', function BattleViewCtrl($scope, $modal) {
     var ctrl = this;
     this.Combatant = Combatant;
 
@@ -155,6 +156,42 @@
     $scope.newCombatant = generateNewCombatant();
     refreshCombatantList();
 
+    function extractAndCopyPartyMembers(combatants) {
+      return combatants.filter(function(combatant) {
+        return combatant.partyMember;
+      }).map(function(partyMemberCabatant) {
+        return new Combatant(partyMemberCabatant.name, undefined, true);
+      }).sort(function(a, b) {
+        return a.name.localeCompare(b.name);
+      });
+    }
+
+    $scope.resetBattle = function() {
+      var partyMemberCopy = extractAndCopyPartyMembers($scope.combatants);
+      if (partyMemberCopy.length > 0) {
+        var modalInstance = $modal.open({
+          templateUrl: 'battleview/resetmodal.tpl.html',
+          controller: 'ResetModalInstanceCtrl',
+          resolve: {
+            combatants: function() {
+              return partyMemberCopy;
+            }
+          }
+        });
+
+        modalInstance.result.then(function(combatants) {
+          $scope.combatants = combatants.sort(function(a, b) {
+            return b.initiative - a.initiative;
+          });
+          refreshCombatantList();
+        });
+      } else {
+        $scope.combatants = [];
+        refreshCombatantList();
+      }
+    };
+
+
     function isValidCombatant(combatant) {
       return combatant && combatant.name && combatant.initiative !== undefined;
     }
@@ -171,6 +208,7 @@
 
       return len;
     }
+
     $scope.addCombatant = function() {
       if (!isValidCombatant($scope.newCombatant)) {
         return;
@@ -205,6 +243,17 @@
         });
         refreshCombatantList();
       }
+    };
+  })
+
+  .controller('ResetModalInstanceCtrl', function($scope, $modalInstance, combatants) {
+    $scope.combatants = combatants;
+    $scope.ok = function() {
+      $modalInstance.close($scope.combatants);
+    };
+
+    $scope.cancel = function() {
+      $modalInstance.dismiss('cancel');
     };
   });
 

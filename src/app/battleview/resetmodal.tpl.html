@@ -1,0 +1,22 @@
+<div class="modal">
+  <form ng-submit="ok()" class="form-horizontal">
+  <div class="modal-header">
+    <h3>Reset Battle</h3>
+  </div>
+  <div class="modal-body">
+    <ul class="unstyled">
+      <li class="control-group" ng-repeat="combatant in combatants">
+        <label class="control-label" ng-bind="combatant.name"></label>
+        <div class="controls">
+          <input class="input-mini" type="number" ng-model="combatant.initiative" required>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <p>Clicking OK will remove all non-party members and update the initiative of the party members as specified above.</p>
+    <input type="submit" class="btn btn-danger" label="OK">
+    <button class="btn" ng-click="cancel()">Cancel</button>
+  </div>
+  </form>
+</div>

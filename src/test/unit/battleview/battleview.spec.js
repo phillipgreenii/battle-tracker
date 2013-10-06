@@ -4,14 +4,34 @@
   describe('battletracker', function() {
 
     describe('battleView', function() {
-      var ctrl, scope;
+      var ctrl, scope, mockModal;
 
       beforeEach(module('ngBattleTracker.battleView'));
 
-      beforeEach(inject(function($controller, $rootScope) {
+      beforeEach(function() {
+        var modalInstance = {
+          result: {
+            then: function(callback) {
+              callback(mockModal.resultToReturn);
+            }
+          }
+        };
+        mockModal = {
+          resultToReturn: [],
+          open: jasmine.createSpy()
+        };
+        mockModal.open.andReturn(modalInstance);
+
+        module(function($provide) {
+          $provide.value('$modal', mockModal);
+        });
+      });
+
+      beforeEach(inject(function($controller, $rootScope, $modal) {
         scope = $rootScope.$new();
         ctrl = $controller('BattleViewCtrl', {
-          $scope: scope
+          $scope: scope,
+          $modal: $modal
         });
       }));
 
@@ -45,6 +65,54 @@
 
       });
 
+
+      describe('resetBattle()', function() {
+
+        it("should empty combatants when no partyMembers", function() {
+          scope.combatants.push(new ctrl.Combatant('Ed', 10, false, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Jim', 5, false, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Kal', 1, false, ctrl.Combatant.TURN_STATUS.complete));
+          scope.$digest();
+
+          scope.resetBattle();
+          expect(mockModal.open).not.toHaveBeenCalled();
+          expect(scope.combatants).toEqual([]);
+        });
+
+        it("should replace combatants with combatants from modelInstance when combatants contained partyMembers", function() {
+          mockModal.resultToReturn = [new ctrl.Combatant('Ed', 1, true)];
+
+          scope.combatants.push(new ctrl.Combatant('Ed', 10, true, ctrl.Combatant.TURN_STATUS.active));
+          scope.combatants.push(new ctrl.Combatant('Jim', 5, false, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Kal', 1, false, ctrl.Combatant.TURN_STATUS.complete));
+          scope.$digest();
+
+          scope.resetBattle();
+
+          //status are the same
+          expect(mockModal.open).toHaveBeenCalled();
+          expect(scope.combatants.length).toEqual(1);
+          expect(scope.combatants[0].name).toEqual('Ed');
+        });
+
+        it("should pass to modal only partyMember combatants ordered by name", function() {
+          scope.combatants.push(new ctrl.Combatant('Ed', 10, true, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Jim', 5, false, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Allen', 3, true, ctrl.Combatant.TURN_STATUS.complete));
+          scope.combatants.push(new ctrl.Combatant('Kal', 1, false, ctrl.Combatant.TURN_STATUS.complete));
+          scope.$digest();
+
+          scope.resetBattle();
+          expect(mockModal.open).toHaveBeenCalled();
+
+          var passedInCombatants = mockModal.open.mostRecentCall.args[0].resolve.combatants();
+          expect(passedInCombatants.length).toBe(2);
+          expect(passedInCombatants[0].name).toEqual('Allen');
+          expect(passedInCombatants[0].partyMember).toBe(true);
+          expect(passedInCombatants[1].name).toEqual('Ed');
+          expect(passedInCombatants[1].partyMember).toBe(true);
+        });
+      });
 
       describe('startNextRound()', function() {
 
@@ -80,7 +148,6 @@
         });
 
       });
-
 
       describe('orderByTurn filter', function() {
         var filter,
