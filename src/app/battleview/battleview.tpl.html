@@ -38,21 +38,48 @@
   </section>
 
   <footer>
-    <form id="new-combatant-form" ng-submit="addCombatant()">
-      <label for="new-combatant-name">Name</label>
-      <input id="new-combatant-name" ng-model="newCombatant.name" autofocus required>
+    <tabset>
+      <tab heading="Add Combatant">
+        <form id="new-combatant-form" ng-submit="addCombatant()">
+          <label for="new-combatant-name">Name</label>
+          <input id="new-combatant-name" ng-model="newCombatant.name" autofocus required>
 
-      <label for="new-combatant-initiative">Initiative</label>
-      <input id="new-combatant-initiative" type="number" ng-model="newCombatant.initiative" required>
+          <label for="new-combatant-initiative">Initiative</label>
+          <input id="new-combatant-initiative" type="number" ng-model="newCombatant.initiative" required>
 
-      <!-- add toggle for party member -->
-      <div class="btn-group btn-block" data-toggle="buttons-radio">
-        <button type="button" class="btn" ng-model="newCombatant.partyMember" btn-radio="true">Party Member</button>
-        <button type="button" class="btn" ng-model="newCombatant.partyMember" btn-radio="false">Non Party Member</button>
-      </div>
+          <div class="btn-group btn-block" data-toggle="buttons-radio">
+            <button type="button" class="btn" ng-model="newCombatant.partyMember" btn-radio="true">Party Member</button>
+            <button type="button" class="btn" ng-model="newCombatant.partyMember" btn-radio="false">Non Party Member</button>
+          </div>
 
-      <input type="submit" class="btn btn-primary btn-block" value="Add Combatant">
-    </form>
+          <input type="submit" class="btn btn-primary btn-block" value="Add Combatant">
+        </form>
+      </tab>
+      <tab heading="Add Multiple Non Party Members">
+        <form id="new-multiple-non-party-combatants-form" class="form-inline" ng-submit="addMultipleNonPartyCombatants()">
+          <label for="new-combatants-name-pattern">Name</label>
+          <input id="new-combatants-name-pattern" ng-model="newMultipleNonPartyCombatants.nameBase" 
+                ng-change="refreshNewMultipleNonPartyCombatants()"autofocus required>
+          <label for="new-combatants-count">Count</label>
+          <input id="new-combatants-count" type="number" ng-model="newMultipleNonPartyCombatants.count" 
+                ng-change="refreshNewMultipleNonPartyCombatants()" required>
+
+          <table ng-show="newMultipleNonPartyCombatants.combatants">
+            <thead>
+              <tr><th>Name</th><th>Initiative</th></tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="newCombatant in newMultipleNonPartyCombatants.combatants">
+                <td><label for="new-combatant-initiative-$index" ng-bind="newCombatant.name"></label></td>
+                <td><input id="new-combatant-initiative-$index" type="number" ng-model="newCombatant.initiative" required></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <input type="submit" class="btn btn-primary btn-block" value="Add Combatants">
+        </form>
+      </tab>
+    </tabset>
   </footer>
 
 

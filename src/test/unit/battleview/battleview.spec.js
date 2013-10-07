@@ -290,6 +290,94 @@
         });
       });
 
+      describe('when adding multiple non party combatants', function() {
+
+        describe('refreshNewMultipleNonPartyCombatants()', function() {
+
+          it('should add combatants with no initiative if count increases', function() {
+            scope.newMultipleNonPartyCombatants.combatants = [{
+              name: 'monster #0',
+              initiative: 3
+            }];
+            scope.newMultipleNonPartyCombatants.nameBase = 'monster';
+            scope.newMultipleNonPartyCombatants.count = 2;
+            scope.refreshNewMultipleNonPartyCombatants();
+            scope.$digest();
+
+            expect(scope.newMultipleNonPartyCombatants.combatants.length).toBe(2);
+            expect(scope.newMultipleNonPartyCombatants.combatants[0].name).toEqual('monster #0');
+            expect(scope.newMultipleNonPartyCombatants.combatants[0].initiative).toBe(3);
+            expect(scope.newMultipleNonPartyCombatants.combatants[1].name).toEqual('monster #1');
+            expect(scope.newMultipleNonPartyCombatants.combatants[1].initiative).toBeUndefined();
+          });
+
+          it('should remove combatants if count decreases', function() {
+            scope.newMultipleNonPartyCombatants.combatants = [{
+              name: 'monster #0',
+              initiative: 3
+            }, {
+              name: 'monster #1',
+              initiative: 5
+            }];
+            scope.newMultipleNonPartyCombatants.nameBase = 'monster';
+            scope.newMultipleNonPartyCombatants.count = 1;
+            scope.refreshNewMultipleNonPartyCombatants();
+            scope.$digest();
+
+            expect(scope.newMultipleNonPartyCombatants.combatants.length).toBe(1);
+            expect(scope.newMultipleNonPartyCombatants.combatants[0].name).toEqual('monster #0');
+            expect(scope.newMultipleNonPartyCombatants.combatants[0].initiative).toBe(3);
+          });
+
+          it('should refresh name if count is the same', function() {
+            scope.newMultipleNonPartyCombatants.combatants = [{
+              name: 'monster #0',
+              initiative: 3
+            }, {
+              name: 'monster #1',
+              initiative: 5
+            }];
+            scope.newMultipleNonPartyCombatants.nameBase = 'potato';
+            scope.newMultipleNonPartyCombatants.count = 2;
+            scope.refreshNewMultipleNonPartyCombatants();
+            scope.$digest();
+
+            expect(scope.newMultipleNonPartyCombatants.combatants.length).toBe(2);
+            expect(scope.newMultipleNonPartyCombatants.combatants[0].name).toEqual('potato #0');
+            expect(scope.newMultipleNonPartyCombatants.combatants[0].initiative).toBe(3);
+            expect(scope.newMultipleNonPartyCombatants.combatants[1].name).toEqual('potato #1');
+            expect(scope.newMultipleNonPartyCombatants.combatants[1].initiative).toBe(5);
+          });
+
+        });
+
+
+        describe('addMultipleNonPartyCombatants()', function() {
+
+          it('should not add non part combatants without inititiaive', function() {
+            scope.newMultipleNonPartyCombatants.nameBase = 'monster';
+            scope.newMultipleNonPartyCombatants.count = 1;
+            scope.refreshNewMultipleNonPartyCombatants();
+            scope.addMultipleNonPartyCombatants();
+            scope.$digest();
+            expect(scope.combatants.length).toBe(0);
+          });
+
+          it('should not add non part combatants without inititiaive', function() {
+            scope.newMultipleNonPartyCombatants.nameBase = 'monster';
+            scope.newMultipleNonPartyCombatants.count = 1;
+            scope.refreshNewMultipleNonPartyCombatants();
+            scope.newMultipleNonPartyCombatants.combatants[0].initiative = 4;
+            scope.addMultipleNonPartyCombatants();
+            scope.$digest();
+            expect(scope.combatants.length).toBe(1);
+            expect(scope.combatants[0].name).toEqual('monster #0');
+            expect(scope.combatants[0].initiative).toBe(4);
+          });
+
+        });
+      });
+
       describe('Combatant Actions', function() {
 
         function lookupAction(actions, label) {

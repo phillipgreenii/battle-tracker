@@ -67,7 +67,8 @@
   angular.module('ngBattleTracker.battleView', [
     'ui.router',
     'ui.route',
-    'ui.bootstrap.modal'
+    'ui.bootstrap.modal',
+    'ui.bootstrap.tabs'
   ])
 
   .config(function homeConfig($stateProvider) {
@@ -154,6 +155,7 @@
 
     $scope.combatants = [];
     $scope.newCombatant = generateNewCombatant();
+    $scope.newMultipleNonPartyCombatants = generateNewNonPartyCombatants();
     refreshCombatantList();
 
     function extractAndCopyPartyMembers(combatants) {
@@ -227,6 +229,47 @@
         partyMember: false
       };
     }
+
+    function generateNewNonPartyCombatants() {
+      return {
+        nameBase: undefined,
+        count: undefined,
+        combatants: []
+      };
+    }
+
+    $scope.refreshNewMultipleNonPartyCombatants = function refreshNewMultipleNonPartyCombatants() {
+      var nameBase = $scope.newMultipleNonPartyCombatants.nameBase,
+        count = $scope.newMultipleNonPartyCombatants.count,
+        newCombatants = $scope.newMultipleNonPartyCombatants.combatants,
+        i;
+      if (count > 0) {
+        newCombatants = newCombatants.slice(0, count);
+        for (i = 0; i < count; i++) {
+          newCombatants[i] = newCombatants[i] || {};
+          newCombatants[i].name = nameBase + " #" + i;
+        }
+      }
+      $scope.newMultipleNonPartyCombatants.combatants = newCombatants;
+    };
+
+    $scope.addMultipleNonPartyCombatants = function addMultipleNonPartyCombatants() {
+      if (!$scope.newMultipleNonPartyCombatants.combatants.every(isValidCombatant)) {
+        return;
+      }
+
+      $scope.newMultipleNonPartyCombatants.combatants.map(function(c) {
+        return new ctrl.Combatant(c.name, c.initiative, false);
+      }).forEach(function(combatant) {
+        var insertPosition = determineInsertPosition($scope.combatants, combatant);
+        $scope.combatants.splice(insertPosition, 0, combatant);
+      });
+
+      $scope.newMultipleNonPartyCombatants = generateNewNonPartyCombatants();
+      $scope.refreshNewMultipleNonPartyCombatants();
+
+      refreshCombatantList();
+    };
 
     $scope.isRoundComplete = function() {
       var hasCombatants = $scope.combatants.length > 0,
