@@ -1,3 +1,19 @@
+<a name="v0.2.0"></a>
+## v0.2.0 (2013-10-07)
+
+
+#### Bug Fixes
+
+* **battleView:** correct name of battleview.js ([48f8eb33](git@github.com:phillipgreenii/battle-tracker/commit/48f8eb33f031480738fb4254c5c82a1760cb06f1))
+
+
+#### Features
+
+* **battleView:**
+  * add the ability to add multiple nonparty members of the same name at once ([c35d471c](git@github.com:phillipgreenii/battle-tracker/commit/c35d471cd5f8b0ffdc5322d3936587a56f6d203f))
+  * Add the ability to reset battle ([b96a8d01](git@github.com:phillipgreenii/battle-tracker/commit/b96a8d0106de813694aeb4ff2ebb75fa689f4681))
+  * distinguish party members from non party members ([109270a1](git@github.com:phillipgreenii/battle-tracker/commit/109270a19f78bd531ae3cf8d3dccc4784aa3f801))
+
 <a name="v0.1.0"></a>
 ## v0.1.0 (2013-10-04)
 
