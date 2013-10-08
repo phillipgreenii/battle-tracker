@@ -153,11 +153,6 @@
       });
     }
 
-    $scope.combatants = [];
-    $scope.newCombatant = generateNewCombatant();
-    $scope.newMultipleNonPartyCombatants = generateNewNonPartyCombatants();
-    refreshCombatantList();
-
     function extractAndCopyPartyMembers(combatants) {
       return combatants.filter(function(combatant) {
         return combatant.partyMember;
@@ -168,7 +163,7 @@
       });
     }
 
-    $scope.resetBattle = function() {
+    function resetBattle() {
       var partyMemberCopy = extractAndCopyPartyMembers($scope.combatants);
       if (partyMemberCopy.length > 0) {
         var modalInstance = $modal.open({
@@ -191,11 +186,6 @@
         $scope.combatants = [];
         refreshCombatantList();
       }
-    };
-
-
-    function isValidCombatant(combatant) {
-      return combatant && combatant.name && combatant.initiative !== undefined;
     }
 
     function determineInsertPosition(combatants, combatant) {
@@ -211,16 +201,38 @@
       return len;
     }
 
-    $scope.addCombatant = function() {
-      if (!isValidCombatant($scope.newCombatant)) {
-        return;
-      }
-      var combatant = new ctrl.Combatant($scope.newCombatant.name, $scope.newCombatant.initiative, $scope.newCombatant.partyMember),
-        insertPosition = determineInsertPosition($scope.combatants, combatant);
+    function addCombatant(combatant) {
+      var insertPosition = determineInsertPosition($scope.combatants, combatant);
       $scope.combatants.splice(insertPosition, 0, combatant);
-      $scope.newCombatant = generateNewCombatant();
       refreshCombatantList();
-    };
+    }
+
+    function isRoundComplete() {
+      var hasCombatants = $scope.combatants.length > 0,
+        allComplete = $scope.combatants.every(function(combatant) {
+          return combatant.turnStatus === Combatant.TURN_STATUS.complete;
+        });
+      return hasCombatants && allComplete;
+    }
+
+    function startNextRound() {
+      if ($scope.isRoundComplete()) {
+        $scope.combatants.forEach(function(combatant) {
+          combatant.turnStatus = Combatant.TURN_STATUS.waiting;
+        });
+        refreshCombatantList();
+      }
+    }
+
+    $scope.resetBattle = resetBattle;
+    $scope.addCombatant = addCombatant;
+    $scope.isRoundComplete = isRoundComplete;
+    $scope.startNextRound = startNextRound;
+    $scope.combatants = [];
+    refreshCombatantList();
+  })
+
+  .controller('AddNewCombatantCtrl', function($scope) {
 
     function generateNewCombatant() {
       return {
@@ -230,6 +242,25 @@
       };
     }
 
+    function isValidCombatant(combatant) {
+      return combatant && combatant.name && combatant.initiative !== undefined;
+    }
+
+    function addCombatant() {
+      if (!isValidCombatant($scope.newCombatant)) {
+        return;
+      }
+      var combatant = new Combatant($scope.newCombatant.name, $scope.newCombatant.initiative, $scope.newCombatant.partyMember);
+      $scope.newCombatant = generateNewCombatant();
+      $scope.$parent.addCombatant(combatant);
+    }
+
+    $scope.newCombatant = generateNewCombatant();
+    $scope.addCombatant = addCombatant;
+  })
+
+  .controller('AddMultipleNonPartyCombatantsCtrl', function($scope) {
+
     function generateNewNonPartyCombatants() {
       return {
         nameBase: undefined,
@@ -238,11 +269,16 @@
       };
     }
 
-    $scope.refreshNewMultipleNonPartyCombatants = function refreshNewMultipleNonPartyCombatants() {
+    function isValidCombatant(combatant) {
+      return combatant && combatant.name && combatant.initiative !== undefined;
+    }
+
+    function refreshNewMultipleNonPartyCombatants() {
       var nameBase = $scope.newMultipleNonPartyCombatants.nameBase,
         count = $scope.newMultipleNonPartyCombatants.count,
         newCombatants = $scope.newMultipleNonPartyCombatants.combatants,
         i;
+
       if (count > 0) {
         newCombatants = newCombatants.slice(0, count);
         for (i = 0; i < count; i++) {
@@ -251,53 +287,38 @@
         }
       }
       $scope.newMultipleNonPartyCombatants.combatants = newCombatants;
-    };
+    }
 
-    $scope.addMultipleNonPartyCombatants = function addMultipleNonPartyCombatants() {
+    function addMultipleNonPartyCombatants() {
       if (!$scope.newMultipleNonPartyCombatants.combatants.every(isValidCombatant)) {
         return;
       }
 
-      $scope.newMultipleNonPartyCombatants.combatants.map(function(c) {
-        return new ctrl.Combatant(c.name, c.initiative, false);
-      }).forEach(function(combatant) {
-        var insertPosition = determineInsertPosition($scope.combatants, combatant);
-        $scope.combatants.splice(insertPosition, 0, combatant);
+      $scope.newMultipleNonPartyCombatants.combatants.forEach(function(c) {
+        var combatant = new Combatant(c.name, c.initiative, false);
+        $scope.$parent.addCombatant(combatant);
       });
 
       $scope.newMultipleNonPartyCombatants = generateNewNonPartyCombatants();
-      $scope.refreshNewMultipleNonPartyCombatants();
+    }
 
-      refreshCombatantList();
-    };
-
-    $scope.isRoundComplete = function() {
-      var hasCombatants = $scope.combatants.length > 0,
-        allComplete = $scope.combatants.every(function(combatant) {
-          return combatant.turnStatus === Combatant.TURN_STATUS.complete;
-        });
-      return hasCombatants && allComplete;
-    };
-
-    $scope.startNextRound = function() {
-      if ($scope.isRoundComplete()) {
-        $scope.combatants.forEach(function(combatant) {
-          combatant.turnStatus = Combatant.TURN_STATUS.waiting;
-        });
-        refreshCombatantList();
-      }
-    };
+    $scope.newMultipleNonPartyCombatants = generateNewNonPartyCombatants();
+    $scope.refreshNewMultipleNonPartyCombatants = refreshNewMultipleNonPartyCombatants;
+    $scope.addMultipleNonPartyCombatants = addMultipleNonPartyCombatants;
   })
 
   .controller('ResetModalInstanceCtrl', function($scope, $modalInstance, combatants) {
-    $scope.combatants = combatants;
-    $scope.ok = function() {
+    function ok() {
       $modalInstance.close($scope.combatants);
-    };
+    }
 
-    $scope.cancel = function() {
+    function cancel() {
       $modalInstance.dismiss('cancel');
-    };
+    }
+
+    $scope.ok = ok;
+    $scope.cancel = cancel;
+    $scope.combatants = combatants;
   });
 
 }(angular));

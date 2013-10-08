@@ -40,7 +40,7 @@
   <footer>
     <tabset>
       <tab heading="Add Combatant">
-        <form id="new-combatant-form" ng-submit="addCombatant()">
+        <form id="new-combatant-form" ng-controller="AddNewCombatantCtrl" ng-submit="addCombatant()">
           <label for="new-combatant-name">Name</label>
           <input id="new-combatant-name" ng-model="newCombatant.name" autofocus required>
 
@@ -56,7 +56,7 @@
         </form>
       </tab>
       <tab heading="Add Multiple Non Party Members">
-        <form id="new-multiple-non-party-combatants-form" class="form-inline" ng-submit="addMultipleNonPartyCombatants()">
+        <form id="new-multiple-non-party-combatants-form" ng-controller="AddMultipleNonPartyCombatantsCtrl" class="form-inline" ng-submit="addMultipleNonPartyCombatants()">
           <label for="new-combatants-name-pattern">Name</label>
           <input id="new-combatants-name-pattern" ng-model="newMultipleNonPartyCombatants.nameBase" 
                 ng-change="refreshNewMultipleNonPartyCombatants()"autofocus required>
