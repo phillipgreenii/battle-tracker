@@ -7,6 +7,7 @@
     'ui.route',
     'ui.bootstrap',
     'ngBattleTracker.home',
+    'ngBattleTracker.campaignView',
     'ngBattleTracker.battleView'
   ])
 

@@ -1,0 +1,27 @@
+<section>
+  <a href="#/">Home</a>
+
+  <header>
+    <h1 class="muted">Campaign: {{campaign.name}}</h1>
+  </header>
+
+  <section ng-show="campaign.combatants.length" ng-cloak>
+  <ul class="unstyled">
+  <li  class="dropdown" ng-repeat="combatant in campaign.combatants">
+    <a class="dropdown-toggle" ng-bind="combatant"></a>
+    <ul class="dropdown-menu">
+      <li>
+         <a class='delete' href="" ng-click="deleteCombatant(combatant)">delete</a>
+      </li>
+    </ul>
+  </li> 
+  </ul>
+  </section>
+  <footer>
+    <button type="button" class="btn btn-default"
+            ng-click="addNewCombatant()">
+      Add New Combatant
+    </button>
+  </footer>
+</section>
+

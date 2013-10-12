@@ -71,7 +71,7 @@
     'ui.bootstrap.tabs'
   ])
 
-  .config(function homeConfig($stateProvider) {
+  .config(function battleViewConfig($stateProvider) {
     $stateProvider.state('battleView', {
       url: '/battleView',
       views: {
