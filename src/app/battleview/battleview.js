@@ -73,7 +73,7 @@
 
   .config(function battleViewConfig($stateProvider) {
     $stateProvider.state('battleView', {
-      url: '/battleView/:campaignId',
+      url: '/battleView/:campaignId?surprise',
       views: {
         "main": {
           controller: 'BattleViewCtrl',
@@ -101,9 +101,9 @@
   .controller('BattleViewCtrl', function BattleViewCtrl($scope, $modal, $stateParams, $location, campaignService) {
     var ctrl = this,
       campaignId = $stateParams.campaignId,
+      surpriseMode = !! $stateParams.surprise,
       campaign;
     this.Combatant = Combatant;
-
 
     function loadCampaign() {
       campaign = campaignService.lookupCampaignById(campaignId);
@@ -196,6 +196,11 @@
           $scope.combatants = combatants.sort(function(a, b) {
             return b.initiative - a.initiative;
           });
+          if (surpriseMode) {
+            $scope.combatants.forEach(function(combatant) {
+              combatant.turnStatus = Combatant.TURN_STATUS.complete;
+            });
+          }
           refreshCombatantList();
         });
       } else {
@@ -205,7 +210,7 @@
     }
 
     function endBattle() {
-      $location.path("/campaignView/" + campaignId);  
+      $location.path("/campaignView/" + campaignId);
     }
 
     function determineInsertPosition(combatants, combatant) {
