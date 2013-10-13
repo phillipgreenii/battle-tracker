@@ -4,6 +4,7 @@
     'ui.router',
     'ui.route',
     'ui.bootstrap.modal',
+    'ngBattleTracker.campaign'
   ])
 
   .config(function campaignViewConfig($stateProvider) {

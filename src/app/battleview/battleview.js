@@ -68,7 +68,8 @@
     'ui.router',
     'ui.route',
     'ui.bootstrap.modal',
-    'ui.bootstrap.tabs'
+    'ui.bootstrap.tabs',
+    'ngBattleTracker.campaign'
   ])
 
   .config(function battleViewConfig($stateProvider) {
