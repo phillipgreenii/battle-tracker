@@ -7,9 +7,10 @@
   </header>
   <ul ng-show="campaigns" class="unstyled">
     <li class="dropdown" ng-repeat="campaign in campaigns">
-      <a class="dropdown-toggle" href="#/campaignView/{{campaign.id}}" ng-bind="campaign.name" 
+      <a href="#/campaignView/{{campaign.id}}" ng-bind="campaign.name" 
           popover-title='Combatants'
-          popover="{{campaign.combatants | combatantsSummary}}" popover-trigger="mouseenter" popover-placement="left"></a>
+          popover="{{campaign.combatants | combatantsSummary}}" popover-trigger="mouseenter" popover-placement="right"></a>
+      <a class="dropdown-toggle"><span class="caret"></span></a>
       <ul class="dropdown-menu">
       <li>
          <a class='delete' href="" ng-click="deleteCampaign(campaign)">delete</a>
