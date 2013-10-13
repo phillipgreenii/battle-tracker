@@ -73,7 +73,7 @@
 
   .config(function battleViewConfig($stateProvider) {
     $stateProvider.state('battleView', {
-      url: '/battleView',
+      url: '/battleView/:campaignId',
       views: {
         "main": {
           controller: 'BattleViewCtrl',
@@ -98,9 +98,25 @@
     };
   })
 
-  .controller('BattleViewCtrl', function BattleViewCtrl($scope, $modal) {
-    var ctrl = this;
+  .controller('BattleViewCtrl', function BattleViewCtrl($scope, $modal, $stateParams, $location, campaignService) {
+    var ctrl = this,
+      campaignId = $stateParams.campaignId,
+      campaign;
     this.Combatant = Combatant;
+
+
+    function loadCampaign() {
+      campaign = campaignService.lookupCampaignById(campaignId);
+    }
+
+    function init() {
+      loadCampaign();
+      campaign.combatants.forEach(function(combatantName) {
+        $scope.combatants.push(
+          new Combatant(combatantName, undefined, true));
+      });
+      resetBattle();
+    }
 
     function filterCombatantsOfTurnStatus(turnStatus) {
       return $scope.combatants.filter(function(combatant) {
@@ -188,6 +204,10 @@
       }
     }
 
+    function endBattle() {
+      $location.path("/campaignView/" + campaignId);  
+    }
+
     function determineInsertPosition(combatants, combatant) {
       var len = combatants.length,
         i;
@@ -224,12 +244,14 @@
       }
     }
 
+    $scope.endBattle = endBattle;
     $scope.resetBattle = resetBattle;
     $scope.addCombatant = addCombatant;
     $scope.isRoundComplete = isRoundComplete;
     $scope.startNextRound = startNextRound;
     $scope.combatants = [];
     refreshCombatantList();
+    init();
   })
 
   .controller('AddNewCombatantCtrl', function($scope) {

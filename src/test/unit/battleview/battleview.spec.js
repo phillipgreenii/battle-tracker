@@ -8,8 +8,7 @@
       beforeEach(module('ngBattleTracker.battleView'));
 
       describe('BattleViewCtrl', function() {
-        var ctrl, scope, mockModal;
-
+        var ctrl, scope, mockModal, mockCampaignService, campaign, stateParams;
 
         beforeEach(function() {
           var modalInstance = {
@@ -26,19 +25,50 @@
           mockModal.open.andReturn(modalInstance);
 
           module(function($provide) {
-            $provide.value('$modal', mockModal);
+            $provide.value('mockModal', mockModal);
           });
         });
 
-        beforeEach(inject(function($controller, $rootScope, $modal) {
+        beforeEach(function() {
+          campaign = {
+            name: 'test campaign',
+            id: '1234',
+            combatants: ['Alf', 'Blade']
+          };
+          mockCampaignService = {
+            lookupCampaignById: jasmine.createSpy(),
+            saveCampaign: jasmine.createSpy()
+          };
+          mockCampaignService.lookupCampaignById.andReturn(campaign);
+          stateParams = {
+            campaignId: '1234'
+          };
+
+          module(function($provide) {
+            $provide.value('mockCampaignService', mockCampaignService);
+            $provide.value('$stateParams', stateParams);
+          });
+        });
+
+        beforeEach(inject(function($controller, $rootScope, $location, mockModal) {
           scope = $rootScope.$new();
           ctrl = $controller('BattleViewCtrl', {
             $scope: scope,
-            $modal: $modal
+            $location: $location,
+            $modal: mockModal,
+            campaignService: mockCampaignService
           });
         }));
 
+        beforeEach(function() {
+          mockModal.resultToReturn = [
+            new ctrl.Combatant('Alf', 4, true),
+            new ctrl.Combatant('Blade', 3, true)
+          ];
+        });
+
         it('should not have any combatants on start', function() {
+          expect(mockCampaignService.lookupCampaignById).toHaveBeenCalled();
           expect(scope.combatants.length).toBe(0);
         });
 
@@ -72,19 +102,22 @@
         describe('resetBattle()', function() {
 
           it("should empty combatants when no partyMembers", function() {
+            scope.combatants = [];
             scope.combatants.push(new ctrl.Combatant('Ed', 10, false, ctrl.Combatant.TURN_STATUS.complete));
             scope.combatants.push(new ctrl.Combatant('Jim', 5, false, ctrl.Combatant.TURN_STATUS.complete));
             scope.combatants.push(new ctrl.Combatant('Kal', 1, false, ctrl.Combatant.TURN_STATUS.complete));
             scope.$digest();
 
             scope.resetBattle();
-            expect(mockModal.open).not.toHaveBeenCalled();
+            expect(mockModal.open).toHaveBeenCalled();
+            expect(mockModal.open.argsForCall.length).toBe(1);
             expect(scope.combatants).toEqual([]);
           });
 
           it("should replace combatants with combatants from modelInstance when combatants contained partyMembers", function() {
             mockModal.resultToReturn = [new ctrl.Combatant('Ed', 1, true)];
 
+            scope.combatants = [];
             scope.combatants.push(new ctrl.Combatant('Ed', 10, true, ctrl.Combatant.TURN_STATUS.active));
             scope.combatants.push(new ctrl.Combatant('Jim', 5, false, ctrl.Combatant.TURN_STATUS.complete));
             scope.combatants.push(new ctrl.Combatant('Kal', 1, false, ctrl.Combatant.TURN_STATUS.complete));
@@ -94,6 +127,7 @@
 
             //status are the same
             expect(mockModal.open).toHaveBeenCalled();
+            expect(mockModal.open.argsForCall.length).toBe(2);
             expect(scope.combatants.length).toEqual(1);
             expect(scope.combatants[0].name).toEqual('Ed');
           });
@@ -107,6 +141,7 @@
 
             scope.resetBattle();
             expect(mockModal.open).toHaveBeenCalled();
+            expect(mockModal.open.argsForCall.length).toBe(2);
 
             var passedInCombatants = mockModal.open.mostRecentCall.args[0].resolve.combatants();
             expect(passedInCombatants.length).toBe(2);
@@ -261,6 +296,16 @@
             expect(scope.combatants[2].name).toEqual('Nancy');
             expect(scope.combatants[2].initiative).toBe(5);
           });
+
+        });
+
+        describe('endBattle()', function() {
+
+          it('should change the url to campaign view', inject(function($location) {
+            scope.endBattle();
+
+            expect($location.url()).toEqual('/campaignView/1234');
+          }));
 
         });
 
