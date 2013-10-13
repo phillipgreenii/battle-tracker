@@ -1,4 +1,6 @@
-battle-tracker [![Build Status](https://travis-ci.org/phillipgreenii/battle-tracker.png?branch=master)](https://travis-ci.org/phillipgreenii/battle-tracker)
+battle-tracker 
+[![Travis Build Status](https://travis-ci.org/phillipgreenii/battle-tracker.png?branch=master)](https://travis-ci.org/phillipgreenii/battle-tracker) 
+![Codeship Build Status](https://www.codeship.io/projects/041954e0-1650-0131-ce90-2e55fe52bf37/status)
 ==============
 
 Tabletop battle tracker
