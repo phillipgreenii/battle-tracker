@@ -69,7 +69,7 @@ module.exports = {
       'vendor/angular-ui-utils/modules/route/route.js',
       'vendor/angular-ui-bootstrap-bower/ui-bootstrap.js',
       'vendor/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js',
-      'vendor/angular-local-storage/angular-local-storage.js'
+      'vendor/angular-localstorage/angular-local-storage.js'
     ],
     css: [
       'vendor/bootstrap.css/css/bootstrap.css'
