@@ -32,5 +32,8 @@
     "grunt-contrib-csslint": "~0.1.2"
   },
   "author": "Phillip Green II",
-  "homepage": "https://github.com/phillipgreenii/battle-tracker"
+  "homepage": "https://github.com/phillipgreenii/battle-tracker",
+  "dependencies": {
+    "express": "~3.4.0"
+  }
 }
