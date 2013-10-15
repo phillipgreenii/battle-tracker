@@ -1,10 +1,15 @@
-language: node_js
+xzslanguage: node_js
 node_js:
-  - 0.10
-
+- 0.1
 before_script:
-  - npm install --quiet -g grunt-cli karma bower
-  - bower install
-
+- npm install --quiet -g grunt-cli karma bower
+- bower install
 script:
-  - grunt
+- grunt
+deploy:
+  provider: heroku
+  api_key:
+    secure: DJJZmbZe9lXkU63uvQ68u8fKv1rZiNDrZZT9YO42QiyNiFIDNAcVC3Oy+vJwd9WjClgDsfsxO4CqBGIzgtXnLSZHXSWRL2uZaERX8E9Dt4V+MXHtj7dwxNf6QMe4rjyC9cQjhq5xHSkdf4skxdtWjuF4eS/dd/VSzkNEeZ51Xpg=
+  app: battle-tracker
+  on:
+    repo: phillipgreenii/battle-tracker

@@ -559,6 +559,11 @@ module.exports = function(grunt) {
    */
   grunt.registerTask('default', ['build', 'compile']);
 
+   /**
+   * The heroku task is run on heroku.
+   */
+  grunt.registerTask('heroku:production', ['build', 'compile']);
+
   /**
    * The develop task is for developing, it builds, starts dev server
    * and then watches (via delta)
