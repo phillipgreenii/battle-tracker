@@ -1,6 +1,6 @@
-xzslanguage: node_js
+language: node_js
 node_js:
-- 0.1
+- 0.10
 before_script:
 - npm install
 - npm install -g grunt-cli
@@ -9,7 +9,7 @@ script:
 - grunt
 deploy:
   provider: heroku
-  buildpack: https://github.com/mbuchetics/heroku-buildpack-nodejs-grunt.git
+  buildpack: nodejs
   api_key:
     secure: DJJZmbZe9lXkU63uvQ68u8fKv1rZiNDrZZT9YO42QiyNiFIDNAcVC3Oy+vJwd9WjClgDsfsxO4CqBGIzgtXnLSZHXSWRL2uZaERX8E9Dt4V+MXHtj7dwxNf6QMe4rjyC9cQjhq5xHSkdf4skxdtWjuF4eS/dd/VSzkNEeZ51Xpg=
   app: battle-tracker
