@@ -9,7 +9,7 @@ script:
 - grunt
 deploy:
   provider: heroku
-  buildpack: nodejs
+  buildpack: https://github.com/heroku/heroku-buildpack-nodejs.git
   api_key:
     secure: DJJZmbZe9lXkU63uvQ68u8fKv1rZiNDrZZT9YO42QiyNiFIDNAcVC3Oy+vJwd9WjClgDsfsxO4CqBGIzgtXnLSZHXSWRL2uZaERX8E9Dt4V+MXHtj7dwxNf6QMe4rjyC9cQjhq5xHSkdf4skxdtWjuF4eS/dd/VSzkNEeZ51Xpg=
   app: battle-tracker
