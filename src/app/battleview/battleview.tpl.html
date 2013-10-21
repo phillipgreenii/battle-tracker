@@ -22,7 +22,7 @@
   </div>
   </li>
   </ul>
-  <footer>
+  <footer ng-controller="BattleRoundCtrl" >
       <button type="button" class="btn btn-default"
               ng-disabled="!isRoundComplete()"
               ng-click="startNextRound()">

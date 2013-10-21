@@ -1,75 +1,49 @@
 (function(angular, undefined) {
 
-  var actionDescriptors = [{
-    label: 'Finish Turn',
-    isApplicable: function(combatant) {
-      return combatant.turnStatus === Combatant.TURN_STATUS.active ||
-        combatant.turnStatus === Combatant.TURN_STATUS.delaying;
-    },
-    generateActionFor: function(combatant) {
-      return function() {
-        combatant.turnStatus = Combatant.TURN_STATUS.complete;
-      };
-    }
-  }, {
-    label: 'Delay Turn',
-    isApplicable: function(combatant) {
-      return combatant.turnStatus === Combatant.TURN_STATUS.active;
-    },
-    generateActionFor: function(combatant, position, combatants) {
-      return function() {
-        combatant.turnStatus = Combatant.TURN_STATUS.delaying;
-      };
-    }
-  }, {
-    label: 'Remove Combatant',
-    isApplicable: function() {
-      return true;
-    },
-    generateActionFor: function(combatant, position, combatants) {
-      return function() {
-        combatants.splice(position, 1);
-      };
-    }
-  }];
-
-  function Combatant(name, initiative, partyMember, turnStatus) {
-    var self = this;
-    self.name = name;
-    self.initiative = initiative;
-    self.partyMember = partyMember || false;
-    self.turnStatus = turnStatus || Combatant.TURN_STATUS.waiting;
+  function defineActionDescriptors(Combatant) {
+    return [{
+      label: 'Finish Turn',
+      isApplicable: function(combatant) {
+        return combatant.turnStatus === Combatant.TURN_STATUS.active ||
+          combatant.turnStatus === Combatant.TURN_STATUS.delaying;
+      },
+      generateActionFor: function(combatant) {
+        return function() {
+          combatant.turnStatus = Combatant.TURN_STATUS.complete;
+        };
+      }
+    }, {
+      label: 'Delay Turn',
+      isApplicable: function(combatant) {
+        return combatant.turnStatus === Combatant.TURN_STATUS.active;
+      },
+      generateActionFor: function(combatant, position, combatants) {
+        return function() {
+          combatant.turnStatus = Combatant.TURN_STATUS.delaying;
+        };
+      }
+    }, {
+      label: 'Remove Combatant',
+      isApplicable: function() {
+        return true;
+      },
+      generateActionFor: function(combatant, position, combatants) {
+        return function() {
+          combatants.splice(position, 1);
+        };
+      }
+    }];
   }
 
-  Combatant.TURN_STATUS = {
-    active: {
-      label: 'active',
-      ordinal: 4
-    },
-    delaying: {
-      label: 'delaying',
-      ordinal: 2
-    },
-    waiting: {
-      label: 'waiting',
-      ordinal: 1
-    },
-    complete: {
-      label: 'complete',
-      ordinal: 0
-    }
-  };
 
-  Combatant.prototype.toString = function() {
-    return "[Combatant " + this.name + ':' + this.turnStatus.label + "]";
-  };
 
   angular.module('ngBattleTracker.battleView', [
     'ui.router',
     'ui.route',
     'ui.bootstrap.modal',
     'ui.bootstrap.tabs',
-    'ngBattleTracker.campaign'
+    'ngBattleTracker.campaign',
+    'ngBattleTracker.battleView.model'
   ])
 
   .config(function battleViewConfig($stateProvider) {
@@ -99,12 +73,11 @@
     };
   })
 
-  .controller('BattleViewCtrl', function BattleViewCtrl($scope, $modal, $stateParams, $location, campaignService) {
+  .controller('BattleViewCtrl', function BattleViewCtrl($scope, $modal, $stateParams, campaignService, BattleViewModel) {
     var ctrl = this,
       campaignId = $stateParams.campaignId,
       surpriseMode = !! $stateParams.surprise,
       campaign;
-    this.Combatant = Combatant;
 
     function loadCampaign() {
       campaign = campaignService.lookupCampaignById(campaignId);
@@ -114,7 +87,7 @@
       loadCampaign();
       campaign.combatants.forEach(function(combatantName) {
         $scope.combatants.push(
-          new Combatant(combatantName, undefined, true));
+          new BattleViewModel.Combatant(combatantName, undefined, true));
       });
       resetBattle();
     }
@@ -137,14 +110,16 @@
 
     function refreshCombatantList() {
       //clear active status
-      filterCombatantsOfTurnStatus(Combatant.TURN_STATUS.active).forEach(function(combatant) {
-        combatant.turnStatus = Combatant.TURN_STATUS.waiting;
+      filterCombatantsOfTurnStatus(BattleViewModel.Combatant.TURN_STATUS.active).forEach(function(combatant) {
+        combatant.turnStatus = BattleViewModel.Combatant.TURN_STATUS.waiting;
       });
       //set active status
-      (filterCombatantsOfTurnStatus(Combatant.TURN_STATUS.waiting)[0] || {}).turnStatus = Combatant.TURN_STATUS.active;
+      (filterCombatantsOfTurnStatus(BattleViewModel.Combatant.TURN_STATUS.waiting)[0] || {}).turnStatus = BattleViewModel.Combatant.TURN_STATUS.active;
       calculateActions();
     }
     ctrl.refreshCombatantList = refreshCombatantList;
+
+    var actionDescriptors = defineActionDescriptors(BattleViewModel.Combatant);
 
     function calculateActions() {
       $scope.combatants.forEach(function(combatant, index) {
@@ -174,7 +149,7 @@
       return combatants.filter(function(combatant) {
         return combatant.partyMember;
       }).map(function(partyMemberCabatant) {
-        return new Combatant(partyMemberCabatant.name, undefined, true);
+        return new BattleViewModel.Combatant(partyMemberCabatant.name, undefined, true);
       }).sort(function(a, b) {
         return a.name.localeCompare(b.name);
       });
@@ -199,7 +174,7 @@
           });
           if (surpriseMode) {
             $scope.combatants.forEach(function(combatant) {
-              combatant.turnStatus = Combatant.TURN_STATUS.complete;
+              combatant.turnStatus = BattleViewModel.Combatant.TURN_STATUS.complete;
             });
           }
           refreshCombatantList();
@@ -208,10 +183,6 @@
         $scope.combatants = [];
         refreshCombatantList();
       }
-    }
-
-    function endBattle() {
-      $location.path("/campaignView/" + campaignId);
     }
 
     function determineInsertPosition(combatants, combatant) {
@@ -233,10 +204,20 @@
       refreshCombatantList();
     }
 
+    $scope.resetBattle = resetBattle;
+    $scope.addCombatant = addCombatant;
+    $scope.combatants = [];
+    refreshCombatantList();
+    init();
+  })
+
+  .controller('BattleRoundCtrl', function($scope, $stateParams, $location, BattleViewModel) {
+    var campaignId = $stateParams.campaignId;
+
     function isRoundComplete() {
       var hasCombatants = $scope.combatants.length > 0,
         allComplete = $scope.combatants.every(function(combatant) {
-          return combatant.turnStatus === Combatant.TURN_STATUS.complete;
+          return combatant.turnStatus === BattleViewModel.Combatant.TURN_STATUS.complete;
         });
       return hasCombatants && allComplete;
     }
@@ -244,23 +225,24 @@
     function startNextRound() {
       if ($scope.isRoundComplete()) {
         $scope.combatants.forEach(function(combatant) {
-          combatant.turnStatus = Combatant.TURN_STATUS.waiting;
+          combatant.turnStatus = BattleViewModel.Combatant.TURN_STATUS.waiting;
         });
-        refreshCombatantList();
+        $scope.$parent.refreshCombatantList();
       }
     }
 
-    $scope.endBattle = endBattle;
-    $scope.resetBattle = resetBattle;
-    $scope.addCombatant = addCombatant;
+    function endBattle() {
+      $location.path("/campaignView/" + campaignId);
+    }
+
+
     $scope.isRoundComplete = isRoundComplete;
     $scope.startNextRound = startNextRound;
-    $scope.combatants = [];
-    refreshCombatantList();
-    init();
+
+    $scope.endBattle = endBattle;
   })
 
-  .controller('AddNewCombatantCtrl', function($scope) {
+  .controller('AddNewCombatantCtrl', function($scope, BattleViewModel) {
 
     function generateNewCombatant() {
       return {
@@ -278,7 +260,7 @@
       if (!isValidCombatant($scope.newCombatant)) {
         return;
       }
-      var combatant = new Combatant($scope.newCombatant.name, $scope.newCombatant.initiative, $scope.newCombatant.partyMember);
+      var combatant = new BattleViewModel.Combatant($scope.newCombatant.name, $scope.newCombatant.initiative, $scope.newCombatant.partyMember);
       $scope.newCombatant = generateNewCombatant();
       $scope.$parent.addCombatant(combatant);
     }
@@ -287,7 +269,7 @@
     $scope.addCombatant = addCombatant;
   })
 
-  .controller('AddMultipleNonPartyCombatantsCtrl', function($scope) {
+  .controller('AddMultipleNonPartyCombatantsCtrl', function($scope, BattleViewModel) {
 
     function generateNewNonPartyCombatants() {
       return {
@@ -323,7 +305,7 @@
       }
 
       $scope.newMultipleNonPartyCombatants.combatants.forEach(function(c) {
-        var combatant = new Combatant(c.name, c.initiative, false);
+        var combatant = new BattleViewModel.Combatant(c.name, c.initiative, false);
         $scope.$parent.addCombatant(combatant);
       });
 
@@ -348,5 +330,4 @@
     $scope.cancel = cancel;
     $scope.combatants = combatants;
   });
-
 }(angular));
