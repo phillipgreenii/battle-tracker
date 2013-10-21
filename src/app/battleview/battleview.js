@@ -206,6 +206,7 @@
 
     $scope.resetBattle = resetBattle;
     $scope.addCombatant = addCombatant;
+    $scope.refreshCombatantList = refreshCombatantList;
     $scope.combatants = [];
     refreshCombatantList();
     init();
