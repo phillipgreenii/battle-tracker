@@ -16,12 +16,20 @@
     </ul>
   </li> 
   </ul>
+  <div>
+    <a href="#/battleView/{{campaign.id}}" class="btn btn-primary"
+            popover="Start a battle with combatants of this campaign." 
+            popover-trigger="mouseenter">Battle</a>
+    <a href="#/battleView/{{campaign.id}}?surprise=true" class="btn btn-secondary"
+            popover="Start a battle with combatants of this campaign where they are surprised. (ie they have no actions the first round.)" 
+            popover-trigger="mouseenter">Surprise Battle</a>
+  </div>
   </section>
   <footer>
-    <a href="#/battleView/{{campaign.id}}" class="btn btn-primary">Battle</a>
-    <a href="#/battleView/{{campaign.id}}?surprise=true" class="btn btn-secondary">Surprise Battle</a>
     <button type="button" class="btn btn-default"
-            ng-click="addNewCombatant()">
+            ng-click="addNewCombatant()"
+            popover="Add a new combatant to the campaign." 
+            popover-trigger="mouseenter">
       Add New Combatant
     </button>
   </footer>

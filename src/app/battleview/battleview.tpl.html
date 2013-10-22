@@ -31,12 +31,16 @@
 
       <button type="button" class="btn btn-default"
               ng-disabled="!combatants"
-              ng-click="resetBattle()">
+              ng-click="resetBattle()"
+            popover="Resets the battle by removing all non-party combatants and resetting initiative for all party combatants." 
+            popover-trigger="mouseenter">
         Reset Battle
       </button>
 
       <button type="button" class="btn btn-default"
-              ng-click="endBattle()">
+              ng-click="endBattle()"
+            popover="Ends the battle and returns to the campaign screen." 
+            popover-trigger="mouseenter">
         End Battle
       </button>
   </footer>
@@ -57,11 +61,18 @@
             <button type="button" class="btn" ng-model="newCombatant.partyMember" btn-radio="false">Non Party Member</button>
           </div>
 
-          <input type="submit" class="btn btn-primary btn-block" value="Add Combatant">
+          <input type="submit" class="btn btn-primary btn-block" value="Add Combatant"
+            popover="Adds the combatant to the battle (no changes to campaign)" 
+            popover-trigger="mouseenter">
         </form>
       </tab>
       <tab heading="Add Multiple Non Party Members">
         <form id="new-multiple-non-party-combatants-form" ng-controller="AddMultipleNonPartyCombatantsCtrl" class="form-inline" ng-submit="addMultipleNonPartyCombatants()">
+          <ul>
+            <li>Specify the name and the number of non-party combatants to generate.</li>
+            <li>Each combatant will have a similar name.</li>
+            <li>Enter initiatives for each non-party combatant.</li>
+          </ul> 
           <label for="new-combatants-name-pattern">Name</label>
           <input id="new-combatants-name-pattern" ng-model="newMultipleNonPartyCombatants.nameBase" 
                 ng-change="refreshNewMultipleNonPartyCombatants()"autofocus required>
@@ -81,7 +92,9 @@
             </tbody>
           </table>
 
-          <input type="submit" class="btn btn-primary btn-block" value="Add Combatants">
+          <input type="submit" class="btn btn-primary btn-block" value="Add Non-Party Combatants"
+            popover="Adds the combatant to the battle as non party members (no changes to campaign)" 
+            popover-trigger="mouseenter">
         </form>
       </tab>
     </tabset>
