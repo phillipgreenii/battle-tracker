@@ -1,3 +1,17 @@
+<a name="v0.3.0"></a>
+## v0.3.0 (2013-10-22)
+
+
+#### Features
+
+* **battleView:** Refactor battleView controllers and tests ([5bef2f21](git@github.com:phillipgreenii/battle-tracker/commit/5bef2f21c0f3e6d3f829c0ff42a725b284077150))
+* **campaigns:**
+  * persist campaigns into web storage ([21528a92](git@github.com:phillipgreenii/battle-tracker/commit/21528a92e84d56129a1c6f2387c4ce8b22a02594))
+  * add surprise battle ([2a52ec12](git@github.com:phillipgreenii/battle-tracker/commit/2a52ec128716979bf2ff119b49b9c76ed3befaef))
+  * add start battle option ([46159f6a](git@github.com:phillipgreenii/battle-tracker/commit/46159f6aafef73f36dab1442eec6e04c7513006f))
+  * Add campaigns ([896fa239](git@github.com:phillipgreenii/battle-tracker/commit/896fa2392b10cf1df43d031cd3975969a9b8ee29))
+* **help:** add popovers to explain actions ([36e2ea7f](git@github.com:phillipgreenii/battle-tracker/commit/36e2ea7f0530de37287c79eea5a2b5178fdd2a4a))
+
 <a name="v0.2.0"></a>
 ## v0.2.0 (2013-10-07)
 
