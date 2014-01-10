@@ -17,3 +17,6 @@ $ npm install
 $ bower install
 $ grunt develop or grunt run
 ```
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/phillipgreenii/battle-tracker/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
